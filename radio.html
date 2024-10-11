@@ -30,8 +30,93 @@
             background-attachment: fixed;
 
         }
+        /* 글리치 텍스트 */
+        .glitch-text {
+            font-size: 2em;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            color: white;
+            animation: glitch 2s infinite;
+            margin-bottom: 15px;
+        }
 
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+        }
 
+        .glitch-text::before {
+            animation: glitchTop 2s infinite;
+            color: red;
+            z-index: -1;
+        }
+
+        .glitch-text::after {
+            animation: glitchBottom 2s infinite;
+            color: blue;
+            z-index: -2;
+        }
+
+        @keyframes glitch {
+            0%, 100% {
+                transform: translate(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translate(-2px, 2px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translate(2px, -2px);
+            }
+        }
+
+        @keyframes glitchTop {
+            0%, 100% {
+                transform: translate(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translate(2px, -2px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translate(-2px, 2px);
+            }
+        }
+
+        @keyframes glitchBottom {
+            0%, 100% {
+                transform: translate(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translate(-2px, 2px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translate(2px, -2px);
+            }
+        }
+
+        #fade-text {
+            display: none;
+            font-size: 1.5em;
+            color: gray;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+
+        /* 메인 텍스트 스타일 */
+        .main-text {
+            font-size: 3em;
+            color: white;
+            opacity: 0;
+            animation: textFade 10s forwards 2s;
+            text-align: center;
+        }
+
+        /* 텍스트 페이드인 */
+        @keyframes textFade {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
         /* Background text layer */
         .background-text {
             position: absolute;
@@ -284,7 +369,10 @@
             </div>
             <div class="volume-value"><span></span></div>
         </div>
-    </div>
+    </div> 
+    <div class="main-text">hippopotomonstrosesquippedaliophobia</div> <!-- 메인 텍스트 -->
+    <div class="glitch-text" data-text="Do Not Turn Around">Do Not Turn Around</div> <!-- 글리치 텍스트 -->
+
     <script>
         const radioDisplay = document.getElementById('radio-text');
         const powerButton = document.getElementById('power-button');
