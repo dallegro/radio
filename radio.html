@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio with Scrolling Text</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #3300ff;
+            /* background-color: #e0e0e0; */
+            margin: 0;
+            user-select: none;
+            flex-direction: column-reverse;
+            gap: 20px;
+        }
+        
+
+        /* Background text layer */
+        .background-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .background-text span {
+            position: absolute;
+            font-size: 60px;
+            color: #76ba73;
+            white-space: nowrap;
+            transform: rotate(-45deg);
+            animation: scrollBackgroundText 20s linear infinite;
+        }
+
+        @keyframes scrollBackgroundText {
+            0% {
+                transform: translateX(100%) rotate(-45deg);
+            }
+            100% {
+                transform: translateX(-200%) rotate(-45deg);
+            }
+        }
+        
+        .radio {
+            color: rgba(0, 0, 0, 0.5);
+            text-decoration: none;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #792828;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4), inset 1px 1px 0 rgba(255, 255, 255, 0.9), inset -1px -1px 0 rgba(0, 0, 0, 0.34);
+            border: 1px solid #dedede;
+            background: -moz-linear-gradient(-72deg, #dedede, #ffffff 16%, #dedede 21%, #ffffff 24%, #454545 27%, #dedede 36%, #ffffff 45%, #ffffff 60%, #dedede 72%, #ffffff 80%, #dedede 84%, #a1a1a1);
+            background: -webkit-linear-gradient(-72deg, #dedede, #ffffff 16%, #dedede 21%, #ffffff 24%, #454545 27%, #dedede 36%, #ffffff 45%, #ffffff 60%, #dedede 72%, #ffffff 80%, #dedede 84%, #a1a1a1);
+            background: -o-linear-gradient(-72deg, #dedede, #ffffff 16%, #dedede 21%, #ffffff 24%, #454545 27%, #dedede 36%, #ffffff 45%, #ffffff 60%, #dedede 72%, #ffffff 80%, #dedede 84%, #a1a1a1);
+            background: linear-gradient(292deg, #dedede, #ffffff 16%, #dedede 21%, #ffffff 24%, #454545 27%, #dedede 36%, #ffffff 45%, #ffffff 60%, #dedede 72%, #ffffff 80%, #dedede 84%, #9d9b9b);
+            width: 500px;
+            height: 268px;
+            border-radius: 25px;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 3px solid #999999;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .speakers{
+            display: flex;
+            gap: 60px;
+        }
+        .speaker {
+            width: 165px;
+            height: 165px;
+            background-color: #222;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            outline: 5px solid #e2e2e2;
+        }
+        .speaker::before {
+            content: '';
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #333 50%, transparent 60%);
+            border-radius: 50%;
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .dial {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            width: 100px;
+            justify-content: space-between;
+        }
+        .dial .frequency-dial {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #frequency-dial-container {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+        }
+
+        #volume-dial-container {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            flex-direction: row-reverse;
+        }
+        .dial .volume-dial {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+        .dial-knob {
+            width: 55px;
+            height: 55px;
+            background-color: rgb(49 49 49);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgb(53 53 53 / 20%);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            outline: 3px solid #e2e2e2;
+        }
+
+        .dial-knob::after {
+            content: '';
+            width: 2px;
+            height: 25px;
+            background-color: #fff;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4), inset 0 2px 5px rgb(53 53 53 / 20%);
+        }
+
+        label {
+            margin-bottom: 3px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+            /**font-size: 14px;**/
+        }
+        .play-button {
+            right: 40px;
+            background-color: #777;
+        }
+        .power-button {
+            right: 110px;
+            background-color: #dd0000;
+        }
+        .play-button,
+        .power-button {
+            width: 50px;
+            height: 20px;
+            border-radius: 13% 13% 0 0;
+            position: absolute;
+            top: -24.5px;
+            box-shadow: inset -1px -7px 20px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 3px solid #626262;
+            border-bottom: none;
+        }
+        .play-button.pressed,
+        .power-button.pressed 
+        {
+            top: -14.5px;
+            height: 10px;
+            box-shadow: inset 0px -3px 11px rgba(0, 0, 0, 0.6);
+        }
+
+        .radio-display {
+            position: relative;
+            width: 460px;
+            max-width: 460px;
+            height: 30px;
+            background-color: #444;
+            color: #76ba73;
+            font-size: 14px;
+            line-height: 30px;
+            border-radius: 6px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .radio-display .scrolling-wrapper {
+            position: absolute;
+            white-space: nowrap;
+            will-change: transform;
+            animation: scrollText 10s linear infinite;
+        }
+
+        .radio-display .scrolling-text {
+            white-space: nowrap;
+            will-change: transform;
+        }
+
+        @keyframes scrollText {
+            0% {
+                transform: translateX(0%);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- <div class="background-text">
+        <span>Background Scrolling Text</span>
+    </div> -->
+
+    <div class="radio">
+        
+        <div class="speakers">
+            <div class="speaker"></div>
+            <div class="speaker"></div>
+        </div>
+        <div class="radio-display" id="radio-display">
+            <div class="scrolling-wrapper">
+                <span class="scrolling-text" id="radio-text">Loading...</span>
+            </div>
+            <!-- <span id="radio-text">Loading...</span> -->
+        </div>    
+        <div class="power-button" id="power-button"></div>
+        <div class="play-button" id="play-button"></div>
+        <div class="dial" id="frequency-dial-container">
+            <div class="frequency-dial">
+                <label for="frequency-dial">Channel<!-- Frequency --></label>
+                <div class="dial-knob" id="frequency-dial"></div>
+            </div>
+            <div class="frequency-value"><span></span></div>
+        </div>
+        <div class="dial" id="volume-dial-container">
+            <div class="volume-dial">
+                <label for="volume-dial">Volume</label>
+                <div class="dial-knob" id="volume-dial"></div>
+            </div>
+            <div class="volume-value"><span></span></div>
+        </div>
+    </div>
+    <script>
+        const radioDisplay = document.getElementById('radio-text');
+        const powerButton = document.getElementById('power-button');
+        const playButton = document.getElementById('play-button');
+        const scrollingWrapper = document.querySelector('.scrolling-wrapper');
+        const audio = new Audio();
+        audio.crossOrigin = 'anonymous';
+        audio.volume = 0.5;
+    
+        let stations = [];
+        let currentStationIndex = 0;
+        let isRadioOn = false;  // 전원 상태
+        let isRadioPlay = false;  // 재생 상태
+    
+        // 볼륨과 주파수 값을 출력할 요소 추가
+        const volumeDisplay = document.createElement('div');
+        const frequencyDisplay = document.createElement('div');
+        volumeDisplay.style.color = 'white';
+        frequencyDisplay.style.color = 'white';
+        document.body.appendChild(volumeDisplay);
+        document.body.appendChild(frequencyDisplay);
+    
+        // 초기 애니메이션 정지 설정 및 초기 메시지
+        scrollingWrapper.style.animationPlayState = 'paused';
+        radioDisplay.textContent = "Please turn on the power";  // 초기 메시지 설정
+    
+        // 전원 버튼을 눌렀을 때 라디오를 켜거나 끄는 기능
+        powerButton.addEventListener('click', () => {
+            isRadioOn = !isRadioOn; // 전원 상태를 토글
+    
+            if (isRadioOn) {
+                powerButton.classList.add('pressed');
+                radioDisplay.textContent = "Select a station to start listening"; // 전원 켜진 상태 메시지
+                scrollingWrapper.style.animationPlayState = 'paused'; // 애니메이션 멈춤 (play-button 켜지면 작동)
+            } else {
+                powerButton.classList.remove('pressed');
+                isRadioPlay = false; // 전원이 꺼지면 자동으로 재생 중지
+                playButton.classList.remove('pressed'); // play-button도 꺼짐
+                audio.pause(); // 오디오 정지
+                scrollingWrapper.style.animationPlayState = 'paused'; // 애니메이션 정지
+                radioDisplay.textContent = "Power Off"; // 전원 꺼졌을 때 메시지
+            }
+        });
+    
+        // 재생/일시정지 버튼을 눌렀을 때 기능
+        playButton.addEventListener('click', () => {
+            if (isRadioOn) { // 전원이 켜진 상태에서만 동작
+                isRadioPlay = !isRadioPlay; // 재생/일시정지 상태 토글
+    
+                if (!isRadioPlay) {
+                    playButton.classList.remove('pressed');
+                    audio.pause();  // 일시정지
+                    scrollingWrapper.style.animationPlayState = 'paused'; // 애니메이션 정지
+                    radioDisplay.textContent = "Select a station to start listening"; // 재생 멈췄을 때 메시지
+                } else {
+                    playButton.classList.add('pressed');
+                    playStation(currentStationIndex);  // 현재 채널 그대로 재생
+                    scrollingWrapper.style.animationPlayState = 'running'; // 애니메이션 시작
+                }
+            }
+        });
+    
+        // Radio Browser API에서 상위 방송국 검색
+        async function fetchRadioStations() {
+            try {
+                const response = await fetch('https://de1.api.radio-browser.info/json/stations/topclick/5');
+                const stationsData = await response.json();
+                return stationsData;
+            } catch (error) {
+                radioDisplay.textContent = "No stations available. Please check your connection or try again later.";
+                console.error(error);
+            }
+        }
+    
+        // 방송국 재생
+        function playStation(index) {
+            if (stations.length > 0 && isRadioPlay) {  // 라디오가 재생 중일 때만
+                const station = stations[index];
+                audio.src = station.url_resolved;
+                audio.play();
+                radioDisplay.textContent = station.name;  // 방송 중인 채널명 표시
+            } else {
+                radioDisplay.textContent = "No Stations Found";
+            }
+        }
+    
+        // 방송국 로드 및 첫 방송국 재생
+        fetchRadioStations().then(data => {
+            stations = data;
+            playStation(currentStationIndex);
+        });
+    
+        // 주파수 다이얼 기능 구현 및 주파수 값 출력
+        const frequencyDial = document.getElementById('frequency-dial');
+        frequencyDial.addEventListener('mousedown', () => isDraggingFrequency = true);
+        document.addEventListener('mouseup', () => isDraggingFrequency = false);
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingFrequency) {
+                const rect = frequencyDial.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    
+                // 각도에 따라 방송국 변경 (3개 방송국 기준)
+                currentStationIndex = Math.floor((angle + 180) / 120) % stations.length;
+                playStation(currentStationIndex);
+    
+                frequencyDial.style.transform = `rotate(${angle}deg)`;
+    
+                // 주파수 값 업데이트 (예: 88.1MHz 등)
+                const frequencyValue = (88.1 + currentStationIndex * 0.5).toFixed(1); // 주파수를 예로 표시
+                frequencyDisplay.textContent = `Frequency: ${frequencyValue} MHz`;
+            }
+        });
+    
+        // 볼륨 다이얼 기능 구현 및 볼륨 값 출력
+        const volumeDial = document.getElementById('volume-dial');
+        volumeDial.addEventListener('mousedown', () => isDraggingVolume = true);
+        document.addEventListener('mouseup', () => isDraggingVolume = false);
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingVolume) {
+                const rect = volumeDial.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    
+                // 각도를 0~1 범위로 변환하여 볼륨 설정
+                const volume = Math.min(Math.max((angle + 180) / 360, 0), 1);
+                audio.volume = volume;
+                volumeDial.style.transform = `rotate(${angle}deg)`;
+    
+                // 볼륨 값 업데이트 (0% ~ 100%)
+                const volumePercentage = Math.floor(volume * 100);
+                volumeDisplay.textContent = `Volume: ${volumePercentage}%`;
+            }
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
