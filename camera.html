@@ -1,0 +1,191 @@
+<!-- https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWqGR1rfArMrxOBLnTwxYJRE-TrHcqtEQRCg-l260znx5UDY2Y9b9ZnsCns-dLUDxKk5o&usqp=CAU -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST Camera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        .camera {
+            position: relative;
+            width: 400px;
+            height: 260px;
+            background-color: #7e7e7e;
+            border-radius: 30px;
+            box-shadow: inset -20px 0px 19px 1px rgba(0, 0, 0, 0.6), inset 80px 0px 8px 18px rgba(255, 255, 255, 0.2), 10px 10px 20px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(145deg, #5f5f5f, #9e9e9e);
+        }
+
+        /* 그룹화된 뷰파인더 */
+        .viewfinder-group {
+            position: absolute;
+            top: -5%;
+            display: flex;
+            left: 80px;
+            width: 80px;
+            height: 50px;
+            border-radius: 10px;
+            box-shadow: 1px -3px 5px 6px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(269deg, #5f5f5f, #9e9e9e);
+            outline: 2px solid #616060;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewfinder {
+            width: 40px;
+            height: 30px;
+            margin-right: 10px;
+            background-color: #000;
+            border: 2px solid #444;
+            border-radius: 4px;
+            box-shadow: -3px 0 5px rgba(0, 0, 0, 0.3), 2px 0px 2px 2px rgba(255, 255, 255, 0.2);
+        }
+
+        .viewfinder-light {
+            position: absolute;
+            right: -10px;
+            width: 20.5px;
+            height: 6px;
+            background-color: #00ff00;
+            border-radius: 10%;
+            box-shadow: 0px 0px 6px 3px #00ff00;
+        }
+
+        
+        /* 버튼 그룹 */
+        .button-group {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            position: absolute;
+            left: 200px;
+            top: 5%;
+        }
+
+        .side-btn {
+            width: 15px;
+            height: 26px;
+            background-color: #4d4d4d;
+            border-radius: 6px;
+            box-shadow: inset -2px -2px 4px rgba(255, 255, 255, 0.1), inset 2px 2px 6px rgba(0, 0, 0, 0.4);        
+        }
+
+        /* 렌즈 관련 요소 그룹화 */
+        .lens-group {
+            position: absolute;
+            left: -5%;
+            top: 50%;
+            transform: translate(0%, -50%);
+            border: 10px solid #5f5f5f;
+            outline: 2px solid #9e9e9e;
+            border-radius: 50%;
+        }
+
+        .lens {
+            display: flex;
+            width: 90px;
+            height: 90px;
+            background-color: #3b3b3b;
+            border-radius: 50%;
+            border: 4px solid #2d2d2d;
+            outline: 2px solid #797979;
+            box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.3), inset -2px -2px 5px rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lens-inner {
+            display: flex;
+            width: 65px;
+            height: 65px;
+            background-color: #4d4d4d;
+            border-radius: 50%;
+            border: 3px solid #232323;
+            justify-content: center;
+            align-items: center;
+            box-shadow: -7px -7px 5px rgba(255, 255, 255, 0.3), -1px -1px 1px 0px rgba(0, 0, 0, 0.7), inset 6px 4px 13px 0px rgba(255, 255, 255, 0.3), inset -6px -3px 9px 1px rgba(0, 0, 0, 0.7);
+        }
+        
+
+        .lens-button {
+            width: 25px;
+            height: 25px;
+            background-color: #555;
+            outline: 2px solid #3b3b3b;
+            border: 1px solid #313030;
+            border-radius: 50%;
+            box-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3), -2px -2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        /* 화면 */
+        .screen {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translate(0, -45%);
+            width: 200px;
+            height: 160px;
+            background-color: #000;
+            border: 4px solid #444;
+            border-radius: 10px;
+            box-shadow: inset 0px 0px 15px rgba(255, 255, 255, 0.1), inset 0px 0px 10px rgba(0, 0, 0, 0.9), 7px 1px 20px 20px rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .y2k-text {
+            font-family: 'Verdana', sans-serif;
+            font-size: 20px;
+            color: #ff0000;
+            text-align: center;
+            text-shadow: 1px 1px 0 #ff9900, -1px -1px 0 #00ffcc;
+            letter-spacing: 1px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="camera">
+        <div class="viewfinder-group">
+            <div class="viewfinder"></div>
+            <div class="viewfinder-light"></div>
+        </div>
+        <div class="button-group">
+            <div class="side-btn"></div>
+            <div class="side-btn"></div>
+            <div class="side-btn"></div>
+            <div class="side-btn"></div>
+        </div>
+
+        <div class="lens-group">
+            <div class="lens">
+                <div class="lens-inner">
+                    <div class="lens-button"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="screen">
+            <p class="y2k-text">FULL<br>TEST<br>VERSION</p>
+        </div>
+
+    </div>
+</body>
+</html>
