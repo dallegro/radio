@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y2K Website</title>
+    <style>
+        /* 기본 스타일 */
+        body {
+            background-color: #ffccff;
+            font-family: 'Comic Sans MS', sans-serif;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            cursor: url('cursor-image.png'), auto;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            background-color: #ff69b4;
+            padding: 20px;
+        }
+
+        header h1 {
+            color: #fff;
+            font-size: 48px;
+            text-shadow: 2px 2px 3px #000;
+        }
+
+        /* 사이드바 스타일 */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #000;
+            color: #fff;
+            width: 200px;
+            height: 100%;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);  /* 사이드바에 그림자 추가 */
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #sidebar ul li {
+            margin: 20px 0;
+        }
+
+        #sidebar ul li a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 20px;
+            transition: color 0.3s ease;  /* 호버 시 자연스러운 색상 변화 */
+        }
+
+        #sidebar ul li a:hover {
+            color: #ff00ff;
+            text-decoration: underline;
+        }
+
+        /* 메인 콘텐츠 스타일 */
+        .main-content {
+            margin-left: 220px;  /* 사이드바 폭만큼 왼쪽에 여백을 둠 */
+            padding: 50px;
+            min-height: 100vh;  /* 콘텐츠가 짧을 때도 푸터가 화면 아래에 위치하도록 */
+        }
+
+
+        /* 메인 콘텐츠 스타일 */
+        .main-content {
+            margin-left: 220px;
+            padding: 50px;
+        }
+
+        .main-content h2 {
+            color: #ff00ff;
+            font-size: 36px;
+            text-shadow: 1px 1px 2px #333;
+        }
+
+        /* 플로팅 이미지 스타일 */
+        .floating-image {
+            position: absolute;
+            top: 100px;
+            left: 50px;
+            width: 100px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 애니메이션 */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* 버튼 스타일 */
+        button {
+            background-color: #00ff00;
+            color: #000;
+            padding: 10px 20px;
+            font-size: 20px;
+            border: 2px solid #333;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px #fff;
+            animation: pulse 1.5s infinite;
+        }
+
+        button:hover {
+            background-color: #ff00ff;
+            color: #fff;
+        }
+
+        /* 버튼 애니메이션 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* 방명록 스타일 */
+        #guestbook {
+            margin-top: 50px;
+            background-color: #fff0f5;
+            padding: 20px;
+            border: 2px solid #ff00ff;
+        }
+
+        #guestbook h3 {
+            color: #ff69b4;
+        }
+
+        #guestbook-form input, #guestbook-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ff69b4;
+        }
+
+        #guestbook-entries ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #guestbook-entries ul li {
+            background-color: #ffccff;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* 푸터 및 방문자 카운터 */
+        footer {
+            background-color: #000;
+            color: #fff;
+            padding: 20px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #visitor-counter {
+            font-weight: bold;
+            color: #00ff00;
+        }
+
+        /* 마퀴 스타일 */
+        marquee {
+            color: #00ff00;
+            font-size: 20px;
+            padding: 20px;
+            background-color: #333;
+            margin-top: 20px;
+            border: 2px solid #ff00ff;
+        }
+
+        /* 폴라로이드 스타일 */
+        .polaroid-container {
+            display: flex;
+            flex-wrap: wrap; /* 사진들이 자동으로 다음 줄로 넘어가도록 */
+            justify-content: space-around; /* 사진 간 간격 조정 */
+            gap: 20px; /* 사진들 사이에 간격 추가 */
+            padding: 20px;
+        }
+        .polaroid {
+            width: 300px; /* 폴라로이드 사진의 가로 크기 */
+            padding: 10px;
+            background-color: white; /* 폴라로이드의 흰색 테두리 */
+            border: 1px solid #ddd;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5); /* 폴라로이드 특유의 그림자 */
+            text-align: center;
+            margin: 20px;
+            font-family: 'Arial', sans-serif;
+            box-sizing: border-box;
+        }
+
+        /* 이미지 래퍼 */
+        .polaroid-image-wrapper {
+            background-color: black; /* 사진 없을 때의 검은 배경 */
+            width: 100%;
+            height: 300px; /* 폴라로이드 사진의 정사각형 비율 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 이미지 스타일 */
+        .polaroid img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* 이미지가 없을 때 이모지를 표시 */
+        .emoji-placeholder {
+            font-size: 60px;
+            color: white;
+            display: none; /* 기본적으로 숨겨진 상태 */
+            animation: flutter 3s ease-in-out infinite; /* 애니메이션 추가 */
+        }
+
+        /* 나비 애니메이션 키프레임 */
+        @keyframes flutter {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); } /* 위로 이동 */
+            100% { transform: translateY(0); } /* 다시 제자리로 */
+        }
+
+        /* 나비 애니메이션 키프레임 */
+        @keyframes randomMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(30px, -40px);
+            }
+            50% {
+                transform: translate(-20px, 30px);
+            }
+            75% {
+                transform: translate(40px, 20px);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        /* 이미지가 없을 때 이모지 나타남 */
+        .polaroid img[src=""] + .emoji-placeholder {
+            display: block;
+        }
+
+        /* 이미지가 없을 때 검은 배경 유지 */
+        .polaroid img[src=""] {
+            display: none;
+        }
+
+        /* 캡션 스타일 (아래쪽에 더 넓은 여백) */
+        .polaroid .caption {
+            padding-top: 15px;
+            font-size: 14px;
+            color: #333;
+            font-style: italic;
+            height: 50px; /* 아래쪽 여백을 더 넓게 설정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- 배경음악 -->
+    <audio autoplay loop>
+        <source src="your-music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- 페이지 헤더 -->
+    <header>
+        <h1>Welcome to My Y2K Universe!</h1>
+    </header>
+
+    <!-- 사이드바 프레임 -->
+    <div id="sidebar">
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Me</a></li>
+            <li><a href="#guestbook">Sign Guestbook</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+        </ul>
+    </div>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="main-content">
+        <h2>Explore the 2000s Vibes</h2>
+        <img src="butterfly.gif" alt="Butterfly GIF" class="floating-image">
+
+        <p>Click the button to see a cool popup!</p>
+        <button onclick="showPopup()">Click me!</button>
+
+        <!-- 폴라로이드 사진들을 묶는 컨테이너 -->
+        <div class="polaroid-container">
+            <div class="polaroid">
+                <div class="polaroid-image-wrapper">
+                    <img src="image1.jpg" alt="Polaroid Image 1" class="polaroid-image" onerror="showEmoji(this)">
+                    <div class="emoji-placeholder">🦋</div>
+                </div>
+                <div class="caption">Caption 1</div>
+            </div>
+            <div class="polaroid">
+                <div class="polaroid-image-wrapper">
+                    <img src="image2.jpg" alt="Polaroid Image 2" class="polaroid-image" onerror="showEmoji(this)">
+                    <div class="emoji-placeholder">🦋</div>
+                </div>
+                <div class="caption">Caption 2</div>
+            </div>
+            <div class="polaroid">
+                <div class="polaroid-image-wrapper">
+                    <img src="image3.jpg" alt="Polaroid Image 3" class="polaroid-image" onerror="showEmoji(this)">
+                    <div class="emoji-placeholder">🦋</div>
+                </div>
+                <div class="caption">Caption 3</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 롤링 텍스트 -->
+    <marquee direction="left">Welcome to my nostalgic Y2K styled website! Keep scrolling for more fun.</marquee>
+
+    <!-- 방명록 섹션 -->
+    <section id="guestbook">
+        <h3>Guestbook</h3>
+        <form id="guestbook-form">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" required>
+            <label for="message">Your Message:</label>
+            <textarea id="message" required></textarea>
+            <button type="submit">Sign the Guestbook!</button>
+        </form>
+        <div id="guestbook-entries">
+            <h4>Guestbook Entries:</h4>
+            <ul id="entries-list"></ul>
+        </div>
+    </section>
+
+    <!-- 방문자 카운터 -->
+    <footer>
+        <p>Visitors: <span id="visitor-counter">0</span></p>
+    </footer>
+
+    <script>
+
+        function showEmoji(img) {
+            img.style.display = "none"; // 이미지 숨김
+            img.nextElementSibling.style.display = "block"; // 이모지 표시
+        }
+
+        // 팝업 창 기능
+        function showPopup() {
+            alert("Welcome to the Y2K nostalgia trip!");
+        }
+
+        // 방문자 카운터 동적 증가
+        let counter = 1024;  // 초기 방문자 수
+        function incrementCounter() {
+            const visitorCounter = document.getElementById('visitor-counter');
+            setInterval(() => {
+                counter++;
+                visitorCounter.textContent = counter;
+            }, 2000);
+        }
+        incrementCounter();
+
+        // 방명록 처리
+        const form = document.getElementById('guestbook-form');
+        const entriesList = document.getElementById('entries-list');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const message = document.getElementById('message').value;
+
+            if (name && message) {
+                const entry = document.createElement('li');
+                entry.textContent = `${name}: ${message}`;
+                entriesList.appendChild(entry);
+                
+                form.reset();
+            }
+        });
+        window.onload = function() {
+            // 모든 나비 이모지 선택
+            const emojis = document.querySelectorAll('.emoji-placeholder');
+            
+            // 나비마다 다른 속도와 애니메이션 시작 위치를 할당
+            emojis.forEach(emoji => {
+                const randomDuration = Math.random() * 5 + 3; // 3초에서 8초 사이의 랜덤 속도
+                const randomDelay = Math.random() * 5; // 0초에서 5초 사이의 랜덤 지연
+                const randomScale = Math.random() * 0.5 + 0.75; // 랜덤 크기 (75%~125%)
+                
+                // 스타일에 애니메이션 추가
+                emoji.style.animation = `randomMove ${randomDuration}s ease-in-out ${randomDelay}s infinite`;
+                emoji.style.transform = `scale(${randomScale})`; // 크기 변경
+            });
+        };
+        
+    </script>
+</body>
+</html>
