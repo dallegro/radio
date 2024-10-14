@@ -394,15 +394,9 @@
         let currentStationIndex = 0;
         let isRadioOn = false;  // 전원 상태
         let isRadioPlay = false;  // 재생 상태
-    
-        // 볼륨과 주파수 값을 출력할 요소 추가
-        const volumeDisplay = document.createElement('div');
-        const frequencyDisplay = document.createElement('div');
-        volumeDisplay.style.color = 'white';
-        frequencyDisplay.style.color = 'white';
-        document.body.appendChild(volumeDisplay);
-        document.body.appendChild(frequencyDisplay);
-    
+        let isDraggingFrequency = false;
+        let isDraggingVolume = false;
+
         // 초기 애니메이션 정지 설정 및 초기 메시지
         scrollingWrapper.style.animationPlayState = 'paused';
         radioDisplay.textContent = "Please turn on the power";  // 초기 메시지 설정
@@ -446,8 +440,9 @@
         // Radio Browser API에서 상위 방송국 검색
         async function fetchRadioStations() {
             try {
-                const response = await fetch('https://de1.api.radio-browser.info/json/stations/topclick/5');
+                const response = await fetch('https://de1.api.radio-browser.info/json/stations/search?country=Japan&codec=MP3');
                 const stationsData = await response.json();
+                console.log('stationsData',stationsData)
                 return stationsData;
             } catch (error) {
                 radioDisplay.textContent = "No stations available. Please check your connection or try again later.";
@@ -461,7 +456,11 @@
                 const station = stations[index];
                 audio.src = station.url_resolved;
                 audio.play();
-                radioDisplay.textContent = station.name;  // 방송 중인 채널명 표시
+                if (station.tags && station.tags.trim() !== "") {
+                    radioDisplay.textContent = `[${station.tags}] ${station.name}`;  // 태그와 채널명 표시
+                } else {
+                    radioDisplay.textContent = `${station.name}`;  // 태그가 없으면 채널명만 표시
+                }  
             } else {
                 radioDisplay.textContent = "No Stations Found";
             }
@@ -473,7 +472,7 @@
             playStation(currentStationIndex);
         });
     
-        // 주파수 다이얼 기능 구현 및 주파수 값 출력
+        // 채널 다이얼 기능 구현 및 채널 값 출력
         const frequencyDial = document.getElementById('frequency-dial');
         frequencyDial.addEventListener('mousedown', () => isDraggingFrequency = true);
         document.addEventListener('mouseup', () => isDraggingFrequency = false);
@@ -482,19 +481,50 @@
                 const rect = frequencyDial.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
-                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-    
-                // 각도에 따라 방송국 변경 (3개 방송국 기준)
-                currentStationIndex = Math.floor((angle + 180) / 120) % stations.length;
+                
+                // 기존의 각도를 계산한 후 90도를 빼서 위쪽이 0도가 되도록 조정
+                let angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI) - 90;
+                
+                // 각도가 음수일 경우 360을 더해서 0~360도 범위로 유지
+                if (angle < 0) {
+                    angle += 360;
+                }
+        
+                // 방송국 리스트의 길이에 맞게 다이얼 각도를 매핑
+                currentStationIndex = Math.floor(angle / (360 / stations.length)) % stations.length;
                 playStation(currentStationIndex);
-    
+        
                 frequencyDial.style.transform = `rotate(${angle}deg)`;
-    
-                // 주파수 값 업데이트 (예: 88.1MHz 등)
-                const frequencyValue = (88.1 + currentStationIndex * 0.5).toFixed(1); // 주파수를 예로 표시
-                frequencyDisplay.textContent = `Frequency: ${frequencyValue} MHz`;
+        
+                // 채널 값 업데이트
+                const frequencyValue = currentStationIndex; // 채널을 예로 표시
+                console.log(`현재 channel: ${frequencyValue}`);
             }
         });
+        frequencyDial.addEventListener('wheel', (e) => {
+            e.preventDefault(); // 기본 스크롤 동작 방지
+            const scrollAmount = e.deltaY > 0 ? 10 : -10; // 스크롤 방향에 따라 각도 변화
+            let angle = (parseFloat(frequencyDial.style.transform.replace('rotate(', '').replace('deg)', '')) || 0) + scrollAmount;
+            
+            // 각도가 음수일 경우 360을 더해서 0~360도 범위로 유지
+            if (angle < 0) {
+                angle += 360;
+            } else if (angle >= 360) {
+                angle -= 360;
+            }
+        
+            // 방송국 리스트의 길이에 맞게 다이얼 각도를 매핑
+            currentStationIndex = Math.floor(angle / (360 / stations.length)) % stations.length;
+            playStation(currentStationIndex);
+        
+            frequencyDial.style.transform = `rotate(${angle}deg)`;
+        
+            // 채널 값 업데이트
+            const frequencyValue = currentStationIndex; // 채널을 예로 표시
+            console.log(`현재 channel: ${frequencyValue}`);
+        });
+        
+        
     
         // 볼륨 다이얼 기능 구현 및 볼륨 값 출력
         const volumeDial = document.getElementById('volume-dial');
@@ -505,18 +535,45 @@
                 const rect = volumeDial.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
-                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
-    
-                // 각도를 0~1 범위로 변환하여 볼륨 설정
-                const volume = Math.min(Math.max((angle + 180) / 360, 0), 1);
+        
+                // 위쪽이 0도가 되도록 90도를 빼서 계산
+                let angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI) - 90;
+        
+                // 각도가 음수일 경우 360을 더해서 0~360도 범위로 유지
+                if (angle < 0) {
+                    angle += 360;
+                }
+        
+                const volume = Math.min(Math.max(angle / 360, 0), 1);  // 0~1 범위로 변환
                 audio.volume = volume;
                 volumeDial.style.transform = `rotate(${angle}deg)`;
-    
+        
                 // 볼륨 값 업데이트 (0% ~ 100%)
                 const volumePercentage = Math.floor(volume * 100);
-                volumeDisplay.textContent = `Volume: ${volumePercentage}%`;
+                console.log(`현재 volume: ${volumePercentage}%`);
             }
         });
+        volumeDial.addEventListener('wheel', (e) => {
+            e.preventDefault(); // 기본 스크롤 동작 방지
+            const scrollAmount = e.deltaY > 0 ? 10 : -10; // 스크롤 방향에 따라 각도 변화
+            let angle = (parseFloat(volumeDial.style.transform.replace('rotate(', '').replace('deg)', '')) || 0) + scrollAmount;
+        
+            // 각도가 음수일 경우 360을 더해서 0~360도 범위로 유지
+            if (angle < 0) {
+                angle += 360;
+            } else if (angle >= 360) {
+                angle -= 360;
+            }
+        
+            const volume = Math.min(Math.max(angle / 360, 0), 1);  // 0~1 범위로 변환
+            audio.volume = volume;
+            volumeDial.style.transform = `rotate(${angle}deg)`;
+        
+            // 볼륨 값 업데이트 (0% ~ 100%)
+            const volumePercentage = Math.floor(volume * 100);
+            console.log(`현재 volume: ${volumePercentage}%`);
+        });
+        
     </script>
     
     
